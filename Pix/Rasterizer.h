@@ -25,6 +25,7 @@ public:
 	void DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3);
 
 private:
+	void DrawTriangleFilled(const Vertex& v1, const Vertex& v2, const Vertex& v3);
 
 	X::Color mColor = X::Colors::White;
 	FillMode mFillMode = FillMode::Solid;
