@@ -3,6 +3,7 @@ SetResolution(50, 50, 10, true)
 SetViewport(10, 10, 30, 30)
 SetClipping(true)
 ShowViewport(false)
+SetFillMode(wireframe)
 
 BeginDraw(point)
 AddVertex(10, 10, 1, 0, 0)
@@ -40,6 +41,16 @@ AddVertex(30, 20, 1, 0, 0)
 AddVertex(48, 25, 0, 1, 0)
 AddVertex(35, 33, 0, 0, 1)
 EndDraw()
+
+
+
+
+
+
+
+
+
+
 
 
 

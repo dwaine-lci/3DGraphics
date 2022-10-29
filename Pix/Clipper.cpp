@@ -7,6 +7,56 @@ const int BIT_RIGHT = 1 << 2; // 0010
 const int BIT_BOTTOM = 1 << 3; // 0100
 const int BIT_TOP = 1 << 4; // 1000
 
+enum class ClipEdge : int { Left, Bottom, Right, Top, Count };
+
+bool IsInFront(ClipEdge edge, const Vector3& pnt)
+{
+	float maxX = Viewport::Get()->GetMaxX();
+	float maxY = Viewport::Get()->GetMaxY();
+	float minX = Viewport::Get()->GetMinX();
+	float minY = Viewport::Get()->GetMinY();
+
+	switch (edge)
+	{
+	case ClipEdge::Left:	return pnt.x > minX;
+	case ClipEdge::Bottom:	return pnt.y < maxY;
+	case ClipEdge::Right:	return pnt.x < maxX;
+	case ClipEdge::Top:		return pnt.y > minY;
+	default:
+		break;
+	}
+	return false;
+}
+
+Vertex ComputeIntersection(ClipEdge edge, const Vertex& v1, const Vertex& v2)
+{
+	float maxX = Viewport::Get()->GetMaxX();
+	float maxY = Viewport::Get()->GetMaxY();
+	float minX = Viewport::Get()->GetMinX();
+	float minY = Viewport::Get()->GetMinY();
+
+	float t = 0.0f;
+	switch (edge)
+	{
+	case ClipEdge::Left:
+		t = (minX - v1.Position.x) / (v2.Position.x - v1.Position.x);
+		break;
+	case ClipEdge::Bottom:
+		t = (maxY - v1.Position.y) / (v2.Position.y - v1.Position.y);
+		break;
+	case ClipEdge::Right:
+		t = (maxX - v1.Position.x) / (v2.Position.x - v1.Position.x);
+		break;
+	case ClipEdge::Top:
+		t = (minY - v1.Position.y) / (v2.Position.y - v1.Position.y);
+		break;
+	default:
+		break;
+	}
+
+	return LerpVertex(v1, v2, t);
+}
+
 int GetOutputCode(float x, float y)
 {
 	int code = BIT_INSIDE;  // initialised as being inside of clip window
@@ -15,9 +65,9 @@ int GetOutputCode(float x, float y)
 		code |= BIT_LEFT;
 	else if (x > Viewport::Get()->GetMaxX())      // to the right of clip window
 		code |= BIT_RIGHT;
-	if (y < Viewport::Get()->GetMinY())           // below the clip window
+	if (y > Viewport::Get()->GetMaxY())           // below the clip window
 		code |= BIT_BOTTOM;
-	else if (y > Viewport::Get()->GetMaxY())      // above the clip window
+	else if (y < Viewport::Get()->GetMinY())      // above the clip window
 		code |= BIT_TOP;
 
 	return code;
@@ -86,7 +136,8 @@ bool Clipper::ClipLine(Vertex& v1, Vertex& v2)
 			{
 				// failed both tests, so calculate the line segment to clip
 				// from an outside point to an intersection with clip edge
-				float x, y = 0.0f;
+				
+				float t = 0.0f;
 				// At least one endpoint is outside the clip rectangle; pick it.
 				int outcodeOut = codeV2 > codeV1 ? codeV2 : codeV1;
 
@@ -100,40 +151,34 @@ bool Clipper::ClipLine(Vertex& v1, Vertex& v2)
 				if (outcodeOut & BIT_TOP)
 				{
 					// point is above the clip window
-					x = v1.Position.x + (v2.Position.x - v1.Position.x) * (maxY - v1.Position.y) / (v2.Position.y - v1.Position.y);
-					y = maxY;
+					t = (minY - v1.Position.y) / (v2.Position.y - v1.Position.y);
 				}
 				else if (outcodeOut & BIT_BOTTOM)
 				{
 					// point is below the clip window
-					x = v1.Position.x + (v2.Position.x - v1.Position.x) * (minY - v1.Position.y) / (v2.Position.y - v1.Position.y);
-					y = minY;
+					t = (maxY - v1.Position.y) / (v2.Position.y - v1.Position.y);
 				}
 				else if (outcodeOut & BIT_RIGHT)
 				{ 
 					// point is to the right of clip window
-					y = v1.Position.y + (v2.Position.y - v1.Position.y) * (maxX - v1.Position.x) / (v2.Position.x - v1.Position.x);
-					x = maxX;
+					t = (maxX - v1.Position.x) / (v2.Position.x - v1.Position.x);
 				}
 				else if (outcodeOut & BIT_LEFT)
 				{
 					// point is to the left of clip window
-					y = v1.Position.y + (v2.Position.y - v1.Position.y) * (minX - v1.Position.x) / (v2.Position.x - v1.Position.x);
-					x = minX;
+					t = (minX - v1.Position.x) / (v2.Position.x - v1.Position.x);
 				}
 
 				// Now we move outside point to intersection point to clip
 				// and get ready for next pass.
 				if (outcodeOut == codeV1)
 				{
-					v1.Position.x = x;
-					v1.Position.y = y;
+					v1 = LerpVertex(v1, v2, t);
 					codeV1 = GetOutputCode(v1.Position.x, v1.Position.y);
 				}
 				else
 				{
-					v2.Position.x = x;
-					v2.Position.y = y;
+					v2 = LerpVertex(v1, v2, t);
 					codeV2 = GetOutputCode(v2.Position.x, v2.Position.y);
 				}
 			}
@@ -146,6 +191,53 @@ bool Clipper::ClipTriangle(std::vector<Vertex>& vertices)
 {
 	if (mClipping)
 	{
+		std::vector<Vertex> newVertices;
+		for (int i = 0; i < (int)ClipEdge::Count; ++i)
+		{
+			newVertices.clear();
+			ClipEdge edge = (ClipEdge)i;
+			for (size_t n = 0; n < vertices.size(); ++n)
+			{
+				size_t np1 = (n + 1) % vertices.size();
+				const Vertex& v1 = vertices[n];
+				const Vertex& v2 = vertices[np1];
+				bool isInFront_V1 = IsInFront(edge, v1.Position);
+				bool isInFront_V2 = IsInFront(edge, v2.Position);
+
+				// simplified version
+				//if (isInFront_V1 != isInFront_V2)
+				//{
+				//	newVertices.push_back(ComputeIntersection(edge, v1, v2));
+				//}
+				//if (isInFront_V2)
+				//{
+				//	newVertices.push_back(v2);
+				//}
+
+				// clarity version
+				if (isInFront_V1 && isInFront_V2)
+				{
+					// save V npt
+					newVertices.push_back(v2);
+				}
+				else if (isInFront_V1 && !isInFront_V2)
+				{
+					//save intersection
+					newVertices.push_back(ComputeIntersection(edge, v1, v2));
+				}
+				else if (!isInFront_V1 && isInFront_V2)
+				{
+					// save intersection and np1
+					newVertices.push_back(ComputeIntersection(edge, v1, v2));
+					newVertices.push_back(v2);
+				}
+				else // both are behind
+				{
+					// dont save any
+				}
+			}
+			vertices = newVertices;
+		}
 
 	}
 	return true;

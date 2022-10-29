@@ -1,4 +1,5 @@
 #include "MathHelper.h"
+#include <math.h>
 
 
 float MathHelper::MagnitudeSquared(const Vector2& v)
@@ -8,7 +9,7 @@ float MathHelper::MagnitudeSquared(const Vector2& v)
 
 float MathHelper::MagnitudeSquared(const Vector3& v)
 {
-	return 0.0f;
+	return v.x * v.x + v.y * v.y + v.z * v.z;
 }
 
 float MathHelper::Magnitude(const Vector2& v)
@@ -18,7 +19,7 @@ float MathHelper::Magnitude(const Vector2& v)
 
 float MathHelper::Magnitude(const Vector3& v)
 {
-	return 0.0f;
+	return sqrt(MagnitudeSquared(v));
 }
 
 Vector2 MathHelper::Normalize(const Vector2& v)
@@ -28,7 +29,8 @@ Vector2 MathHelper::Normalize(const Vector2& v)
 
 Vector3 MathHelper::Normalize(const Vector3& v)
 {
-	return Vector3();
+	float invMag = 1.0f / Magnitude(v);
+	return v * invMag;
 }
 
 float MathHelper::Dot(const Vector2& a, const Vector2& b)
