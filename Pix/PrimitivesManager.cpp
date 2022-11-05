@@ -2,6 +2,25 @@
 #include "Rasterizer.h"
 #include "Clipper.h"
 
+extern float gResolutionX;
+extern float gResolutionY;
+
+namespace
+{
+	Matrix4 GetScreenTransform()
+	{
+		float hw = X::GetScreenWidth() * 0.5f;
+		float hh = X::GetScreenHeight() * 0.5f;
+		return Matrix4(
+			hw, 0.0f, 0.0f, 0.0f,
+			0.0f, -hh, 0.0f, 0.0f,
+			0.0f, 0.0f, 1.0f, 0.0f,
+			hw, hh, 0.0f, 1.0f
+		);
+
+	}
+}
+
 PrimitivesManager::PrimitivesManager()
 {
 
