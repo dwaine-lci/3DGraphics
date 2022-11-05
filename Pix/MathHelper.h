@@ -1,4 +1,5 @@
 #pragma once
+#include "Matrix4.h"
 
 struct Vector2
 {
@@ -42,11 +43,11 @@ public:
 	static Vector3 Cross(const Vector3& a, const Vector3& b);
 	static float Lerp(float a, float b, float t);
 
-	Vector3 TransformCoord(Vector3 v, Matrix4 m); // assume w = 1
-	Vector3 TransformNormal(Vector3 v, Matrix4 m); // assume w = 0
-	float Determinant(Matrix4 m);
-	Matrix4 Adjoint(Matrix4 m);
-	Matrix4 Transpose(Matrix4 m);
-	Matrix4 Inverse(Matrix4 m);
+	Vector3 TransformCoord(const Vector3& v, const Matrix4& m); // assume w = 1
+	Vector3 TransformNormal(const Vector3& v, const Matrix4& m); // assume w = 0
 
+	float Determinant(const Matrix4& m);
+	Matrix4 Adjoint(const Matrix4& m);
+	Matrix4 Transpose(const Matrix4& m);
+	Matrix4 Inverse(const Matrix4& m);
 };
