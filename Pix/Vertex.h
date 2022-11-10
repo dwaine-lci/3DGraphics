@@ -1,6 +1,6 @@
 #pragma once
+#include <XColors.h>
 #include "MathHelper.h"
-#include <XEngine.h>
 
 struct Vertex
 {

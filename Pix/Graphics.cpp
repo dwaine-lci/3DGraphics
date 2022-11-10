@@ -3,10 +3,14 @@
 #include "DepthBuffer.h"
 #include "MaterialManager.h"
 #include "Viewport.h"
+#include "Camera.h"
+#include "MatrixStack.h"
 
 void Graphics::NewFrame()
 {
 	DepthBuffer::Get()->OnNewFrame();
 	MaterialManager::Get()->OnNewFrame();
 	Viewport::Get()->OnNewFrame();
+	Camera::Get()->OnNewFrame();
+	MatrixStack::Get()->OnNewFrame();
 }

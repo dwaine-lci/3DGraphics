@@ -1,7 +1,6 @@
 #include "MathHelper.h"
 #include <math.h>
 
-
 float MathHelper::MagnitudeSquared(const Vector2& v)
 {
 	return 0.0f;
@@ -35,12 +34,21 @@ Vector3 MathHelper::Normalize(const Vector3& v)
 
 float MathHelper::Dot(const Vector2& a, const Vector2& b)
 {
-	return 0.0f;
+	return a.x * b.x + a.y * b.y;
+}
+
+float MathHelper::Dot(const Vector3& a, const Vector3& b)
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 Vector3 MathHelper::Cross(const Vector3& a, const Vector3& b)
 {
-	return Vector3();
+	return Vector3(
+		a.y * b.z - a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x
+	);
 }
 
 float MathHelper::Lerp(float a, float b, float t)
@@ -118,4 +126,70 @@ Vector3 MathHelper::TransformNormal(const Vector3& v, const Matrix4& m)
 		(v.x * m._12) + (v.y * m._22) + (v.z * m._32),
 		(v.x * m._13) + (v.y * m._23) + (v.z * m._33)
 	};
+}
+
+Matrix4 Matrix4::Translation(Vector3 d)
+{
+	return Matrix4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		d.x,  d.y,  d.z,  1.0f
+	);
+}
+
+Matrix4 Matrix4::RotationX(float radian)
+{
+	const float s = sinf(radian);
+	const float c = cosf(radian);
+	return Matrix4(
+		1.0f, 0.0f, 0.0f, 0.0f,
+		0.0f, c,    s,    0.0f,
+		0.0f, -s,   c,    0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+Matrix4 Matrix4::RotationY(float radian)
+{
+	const float s = sinf(radian);
+	const float c = cosf(radian);
+	return Matrix4(
+		c,    0.0f, -s,   0.0f,
+		0.0f, 1.0f, 0.0f, 0.0f,
+		s,    0.0f, c,    0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+Matrix4 Matrix4::RotationZ(float radian)
+{
+	const float s = sinf(radian);
+	const float c = cosf(radian);
+	return Matrix4(
+		c,    s,    0.0f, 0.0f,
+		-s,   c,    0.0f, 0.0f,
+		0.0f, 0.0f, 1.0f, 0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+Matrix4 Matrix4::Scaling(float s)
+{
+	return Matrix4(
+		s,    0.0f, 0.0f, 0.0f,
+		0.0f, s,    0.0f, 0.0f,
+		0.0f, 0.0f, s,    0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
+}
+
+Matrix4 Matrix4::Scaling(Vector3 s)
+{
+	return Matrix4(
+		s.x,  0.0f, 0.0f, 0.0f,
+		0.0f, s.y,  0.0f, 0.0f,
+		0.0f, 0.0f, s.z,  0.0f,
+		0.0f, 0.0f, 0.0f, 1.0f
+	);
 }
