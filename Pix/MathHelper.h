@@ -130,4 +130,8 @@ public:
 	static Matrix4 Adjoint(const Matrix4& m);
 	static Matrix4 Transpose(const Matrix4& m);
 	static Matrix4 Inverse(const Matrix4& m);
+
+	static bool CheckEquals(float a, float b);
+	static bool CheckEquals(const Vector3& a, const Vector3& b);
+	static bool CheckEquals(const Matrix4& a, const Matrix4& b);
 };

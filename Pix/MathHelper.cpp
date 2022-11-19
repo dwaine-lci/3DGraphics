@@ -108,6 +108,38 @@ Matrix4 MathHelper::Inverse(const Matrix4& m)
 	return Adjoint(m) * invDet;
 }
 
+bool MathHelper::CheckEquals(float a, float b)
+{
+	return fabs(a - b) < 0.001f;
+}
+bool MathHelper::CheckEquals(const Vector3& a, const Vector3& b)
+{
+	return CheckEquals(a.x, b.x) 
+		&& CheckEquals(a.y, b.y)
+		&& CheckEquals(a.z, b.z);
+}
+
+bool MathHelper::CheckEquals(const Matrix4& a, const Matrix4& b)
+{
+	return CheckEquals(a._11, b._11)
+		&& CheckEquals(a._12, b._12)
+		&& CheckEquals(a._13, b._13)
+		&& CheckEquals(a._14, b._14)
+		&& CheckEquals(a._21, b._21)
+		&& CheckEquals(a._22, b._22)
+		&& CheckEquals(a._23, b._23)
+		&& CheckEquals(a._24, b._24)
+		&& CheckEquals(a._31, b._31)
+		&& CheckEquals(a._32, b._32)
+		&& CheckEquals(a._33, b._33)
+		&& CheckEquals(a._34, b._34)
+		&& CheckEquals(a._41, b._41)
+		&& CheckEquals(a._42, b._42)
+		&& CheckEquals(a._43, b._43)
+		&& CheckEquals(a._44, b._44);
+
+}
+
 Vector3 MathHelper::TransformCoord(const Vector3& v, const Matrix4& m)
 {
 	const float w = ((v.x * m._14) + (v.y * m._24) + (v.z * m._34) + (1.0f * m._44));

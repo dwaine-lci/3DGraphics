@@ -23,7 +23,10 @@ void Rasterizer::DrawPoint(int x, int y)
 }
 void Rasterizer::DrawPoint(const Vertex& v)
 {
-	X::DrawPixel(v.Position.x, v.Position.y, v.Color);
+	if (DepthBuffer::Get()->CheckDepthBuffer(v.Position.x, v.Position.y, v.Position.z))
+	{
+		X::DrawPixel(v.Position.x, v.Position.y, v.Color);
+	}
 }
 
 void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
@@ -62,6 +65,7 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 		if (std::abs(dy) < std::abs(dx))
 		{
 			float startX, endX;
+			float startDepth, endDepth;
 			X::Color startColor, endColor;
 			if (v1.Position.x < v2.Position.x)
 			{
@@ -69,6 +73,8 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 				endX = v2.Position.x;
 				startColor = v1.Color;
 				endColor = v2.Color;
+				startDepth = v1.Position.z;
+				endDepth = v2.Position.z;
 			}
 			else
 			{
@@ -76,25 +82,34 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 				endX = v1.Position.x;
 				startColor = v2.Color;
 				endColor = v1.Color;
+				startDepth = v2.Position.z;
+				endDepth = v1.Position.z;
 			}
 			for (float x = startX; x <= endX; ++x)
 			{
 				float y = m * x + b;
 				float t = (x - startX) / (endX - startX);
+				float depth = startDepth + (endDepth - startDepth) * t;
 				X::Color color = LerpColor(startColor, endColor, t);
-				X::DrawPixel(x, y, color);
+				if (DepthBuffer::Get()->CheckDepthBuffer(x, y, depth))
+				{
+					X::DrawPixel(x, y, color);
+				}
 			}
 		}
 		else
 		{
 			float startY, endY;
 			X::Color startColor, endColor;
-			if (v1.Position.x < v2.Position.x)
+			float startDepth, endDepth;
+			if (v1.Position.y < v2.Position.y)
 			{
 				startY = v1.Position.y;
 				endY = v2.Position.y;
 				startColor = v1.Color;
 				endColor = v2.Color;
+				startDepth = v1.Position.z;
+				endDepth = v2.Position.z;
 			}
 			else
 			{
@@ -102,13 +117,19 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 				endY = v1.Position.y;
 				startColor = v2.Color;
 				endColor = v1.Color;
+				startDepth = v2.Position.z;
+				endDepth = v1.Position.z;
 			}
 			for (float y = startY; y <= endY; ++y)
 			{
 				float x = (y - b) / m;
 				float t = (y - startY) / (endY - startY);
+				float depth = startDepth + (endDepth - startDepth) * t;
 				X::Color color = LerpColor(startColor, endColor, t);
-				X::DrawPixel(x, y, color);
+				if (DepthBuffer::Get()->CheckDepthBuffer(x, y, depth))
+				{
+					X::DrawPixel(x, y, color);
+				}
 			}
 		}
 	}
@@ -139,7 +160,7 @@ void Rasterizer::DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& 
 void Rasterizer::DrawTriangleFilled(const Vertex& v1, const Vertex& v2, const Vertex& v3)
 {
 	// should be top
-	if (v1.Position.y == v2.Position.y)
+	if (MathHelper::CheckEquals(v1.Position.y, v2.Position.y))
 	{
 		float dy = v1.Position.y - v3.Position.y;
 		Vertex topLeft, topRight;
@@ -162,7 +183,7 @@ void Rasterizer::DrawTriangleFilled(const Vertex& v1, const Vertex& v2, const Ve
 		}
 	}
 	// should be bottom
-	else if(v2.Position.y == v3.Position.y)
+	else if(MathHelper::CheckEquals(v2.Position.y, v3.Position.y))
 	{
 		float dy = v1.Position.y - v3.Position.y;
 		Vertex bottomLeft, bottomRight;
