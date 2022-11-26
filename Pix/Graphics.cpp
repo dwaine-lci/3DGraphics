@@ -5,6 +5,7 @@
 #include "Viewport.h"
 #include "Camera.h"
 #include "MatrixStack.h"
+#include "LightManager.h"
 
 void Graphics::NewFrame()
 {
@@ -13,4 +14,5 @@ void Graphics::NewFrame()
 	Viewport::Get()->OnNewFrame();
 	Camera::Get()->OnNewFrame();
 	MatrixStack::Get()->OnNewFrame();
+	LightManager::Get()->OnNewFrame();
 }

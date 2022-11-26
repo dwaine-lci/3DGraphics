@@ -3,6 +3,7 @@
 #include "Clipper.h"
 #include "MatrixStack.h"
 #include "Camera.h"
+#include "LightManager.h"
 
 extern float gResolutionX;
 extern float gResolutionY;
@@ -89,8 +90,8 @@ bool PrimitivesManager::EndDraw()
 		Matrix4 matView = Camera::Get()->GetViewMatrix();
 		Matrix4 matProj = Camera::Get()->GetProjectionMatrix();
 		Matrix4 matScreen = GetScreenTransform();
-		Matrix4 ndcSpace = matWorld * matView * matProj;
-		Matrix4 matFinal = ndcSpace * matScreen;
+		Matrix4 ndcSpace = matView * matProj;  // matWorld * matView * matProj
+		Matrix4 matFinal = ndcSpace * matScreen;  // matWorld * matView * matProj * matScreen
 
 		for (size_t i = 2; i < mVertexBuffer.size(); i += 3)
 		{
@@ -98,15 +99,34 @@ bool PrimitivesManager::EndDraw()
 
 			if (mApplyTransform)
 			{
+				// move all the vertecies to the world
+				for (auto& v : triangle)
+				{
+					auto posWorld = MathHelper::TransformCoord(v.Position, matWorld);
+					v.Position = posWorld;
+				}
+
+				// get face norm in the world
+				Vector3 faceNorm = MathHelper::Cross((triangle[1].Position - triangle[0].Position),
+					(triangle[2].Position - triangle[0].Position));
+
+				// apply color
+				for (auto& v : triangle)
+				{
+					v.Color *= LightManager::Get()->ComputeLightColor(v.Position, faceNorm);
+				}
+
 				if (mCullMode != CullMode::None)
 				{
+					// move from world to NDC
 					for (auto& v : triangle)
 					{
 						auto posNdc = MathHelper::TransformCoord(v.Position, ndcSpace);
 						v.Position = posNdc;
 					}
 
-					Vector3 faceNorm = MathHelper::Cross((triangle[1].Position - triangle[0].Position), 
+					// get facing at NDC to determin CULL
+					faceNorm = MathHelper::Cross((triangle[1].Position - triangle[0].Position), 
 														(triangle[2].Position - triangle[0].Position));
 					if (mCullMode == CullMode::Back && faceNorm.z > 0.0f)
 					{
@@ -116,6 +136,8 @@ bool PrimitivesManager::EndDraw()
 					{
 						continue;
 					}
+
+					// move to screen space
 					for (auto& v : triangle)
 					{
 						auto posScreen = MathHelper::TransformCoord(v.Position, matScreen);
