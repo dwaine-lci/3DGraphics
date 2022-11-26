@@ -123,6 +123,12 @@
     <ClCompile Include="CmdSetCameraPosition.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
+    <ClCompile Include="CmdSetCullMode.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdEnableDepth.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextEditor.h">
@@ -243,6 +249,12 @@
       <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="CmdSetCameraPosition.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdSetCullMode.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdEnableDepth.h">
       <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
