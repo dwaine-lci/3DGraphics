@@ -27,9 +27,6 @@
     <ClCompile Include="CmdSetResolution.cpp">
       <Filter>Commands</Filter>
     </ClCompile>
-    <ClCompile Include="CommandDictionary.cpp">
-      <Filter>Commands</Filter>
-    </ClCompile>
     <ClCompile Include="Viewport.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
@@ -144,6 +141,21 @@
     <ClCompile Include="PointLight.cpp">
       <Filter>Graphics</Filter>
     </ClCompile>
+    <ClCompile Include="Model.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelCache.cpp">
+      <Filter>Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdModel.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandDictionary.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="CmdSetShadeMode.cpp">
+      <Filter>Commands</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TextEditor.h">
@@ -165,9 +177,6 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="CmdSetResolution.h">
-      <Filter>Commands</Filter>
-    </ClInclude>
-    <ClInclude Include="CommandDictionary.h">
       <Filter>Commands</Filter>
     </ClInclude>
     <ClInclude Include="Viewport.h">
@@ -286,6 +295,21 @@
     </ClInclude>
     <ClInclude Include="PointLight.h">
       <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelCache.h">
+      <Filter>Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdModel.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandDictionary.h">
+      <Filter>Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="CmdSetShadeMode.h">
+      <Filter>Commands</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -5,7 +5,6 @@ SetClipping(true)
 SetCullMode(back)
 ShowViewport(true)
 EnableDepth(true)
-SetShadeMode(phong)
 
 float $camX = 0, 0.01
 float $camY = 1.5, 0.01
@@ -33,10 +32,12 @@ float $rotZ = 0, 0.1
 SetCameraPosition($camX, $camY, $camZ)
 SetCameraDirection($camDirX, $camDirY, $camDirZ)
 
-SetLightAmbient(0.5, 0.5, 0.5)
+SetLightAmbient(0.2, 0.2, 0.2)
 SetLightDiffuse(0.9, 0.0, 0.9)
-SetLightSpecular(0.9, 0.9, 0.93)
-AddPointLight($lPosX, $lPosY, $lPosZ, 1, 0.5, 0.5)
+SetLightSpecular(0.3, 0.3, 0.3)
+AddSpotLight($lPosX, $lPosY, $lPosZ, $lDirX, $lDirY, $lDirZ, 1, 0.1, 0 ,$lAngle, $lDecay)
+
+SetShading(flat)
 
 BeginDraw(triangle, true)
 Model(../Models/plane_8x8.obj)
@@ -46,6 +47,7 @@ EndDraw()
 PushTranslation($lPosX, $lPosY, $lPosZ)
 PushScaling(0.1, 0.1, 0.1)
 
+SetShading(gauroud)
 BeginDraw(triangle, true)
 Model(../Models/cube.obj)
 EndDraw()
@@ -59,13 +61,7 @@ PushRotationY($rotY)
 PushRotationX($rotX)
 PushScaling(0.5, 0.5, 0.5)
 
+SetShading(phong)
 BeginDraw(triangle, true)
-Model(../Models/snow_man.obj)
+Model(../Models/torus_knot.obj)
 EndDraw()
-
-
-
-
-
-
-

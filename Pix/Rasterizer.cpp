@@ -1,5 +1,6 @@
 #include "Rasterizer.h"
 #include "DepthBuffer.h"
+#include "LightManager.h"
 
 Rasterizer* Rasterizer::Get()
 {
@@ -15,6 +16,11 @@ void Rasterizer::SetColor(X::Color color)
 void Rasterizer::SetFillMode(FillMode mode)
 {
 	mFillMode = mode;
+}
+
+void Rasterizer::SetShadeMode(ShadeMode mode)
+{
+	mShadeMode = mode;
 }
 
 void Rasterizer::DrawPoint(int x, int y)
@@ -54,7 +60,12 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 		for (float y = startY; y <= endY; ++y)
 		{
 			float t = (y - startY) / (endY - startY);
-			Vertex v = LerpVertex(v1, v2, t);
+			Vertex v = LerpVertex(v1, v2, t, mShadeMode == ShadeMode::Phong);
+			if (mShadeMode == ShadeMode::Phong)
+			{
+				Vector3 worldPos = LerpPosition(v1.WorldPosition, v2.WorldPosition, t);
+				v.Color *= LightManager::Get()->ComputeLightColor(v.Position, v.WorldNormal);
+			}
 			DrawPoint(v);
 		}
 	}
@@ -64,78 +75,80 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 		float b = (v2.Position.y - (m * v2.Position.x));
 		if (std::abs(dy) < std::abs(dx))
 		{
-			float startX, endX;
-			float startDepth, endDepth;
-			X::Color startColor, endColor;
+			Vertex startV, endV;
 			if (v1.Position.x < v2.Position.x)
 			{
-				startX = v1.Position.x;
-				endX = v2.Position.x;
-				startColor = v1.Color;
-				endColor = v2.Color;
-				startDepth = v1.Position.z;
-				endDepth = v2.Position.z;
+				startV = v1;
+				endV = v2;
 			}
 			else
 			{
-				startX = v2.Position.x;
-				endX = v1.Position.x;
-				startColor = v2.Color;
-				endColor = v1.Color;
-				startDepth = v2.Position.z;
-				endDepth = v1.Position.z;
+				startV = v2;
+				endV = v1;
 			}
-			for (float x = startX; x <= endX; ++x)
+			for (float x = startV.Position.x; x <= endV.Position.x; ++x)
 			{
-				float y = m * x + b;
-				float t = (x - startX) / (endX - startX);
-				float depth = startDepth + (endDepth - startDepth) * t;
-				X::Color color = LerpColor(startColor, endColor, t);
+				float t = (x - startV.Position.x) / (endV.Position.x - startV.Position.x);
+				float y = startV.Position.y + (endV.Position.y - startV.Position.y) * t;
+				float depth = startV.Position.z + (endV.Position.z - startV.Position.z) * t;
 				if (DepthBuffer::Get()->CheckDepthBuffer(x, y, depth))
 				{
-					X::DrawPixel(x, y, color);
+					Vertex v = LerpVertex(startV, endV, t, mShadeMode == ShadeMode::Phong);
+					if (mShadeMode == ShadeMode::Phong)
+					{
+						Vector3 worldPos = LerpPosition(v1.WorldPosition, v2.WorldPosition, t);
+						v.Color *= LightManager::Get()->ComputeLightColor(v.Position, v.WorldNormal);
+					}
+					DrawPoint(v);
 				}
 			}
 		}
 		else
 		{
-			float startY, endY;
-			X::Color startColor, endColor;
-			float startDepth, endDepth;
+			Vertex startV, endV;
 			if (v1.Position.y < v2.Position.y)
 			{
-				startY = v1.Position.y;
-				endY = v2.Position.y;
-				startColor = v1.Color;
-				endColor = v2.Color;
-				startDepth = v1.Position.z;
-				endDepth = v2.Position.z;
+				startV = v1;
+				endV = v2;
 			}
 			else
 			{
-				startY = v2.Position.y;
-				endY = v1.Position.y;
-				startColor = v2.Color;
-				endColor = v1.Color;
-				startDepth = v2.Position.z;
-				endDepth = v1.Position.z;
+				startV = v2;
+				endV = v1;
 			}
-			for (float y = startY; y <= endY; ++y)
+			for (float y = startV.Position.y; y <= endV.Position.y; ++y)
 			{
-				float x = (y - b) / m;
-				float t = (y - startY) / (endY - startY);
-				float depth = startDepth + (endDepth - startDepth) * t;
-				X::Color color = LerpColor(startColor, endColor, t);
+				float t = (y - startV.Position.y) / (endV.Position.y - startV.Position.y);
+				float x = startV.Position.x + (endV.Position.x - startV.Position.x) * t;
+				float depth = startV.Position.z + (endV.Position.z - startV.Position.z) * t;
 				if (DepthBuffer::Get()->CheckDepthBuffer(x, y, depth))
 				{
-					X::DrawPixel(x, y, color);
+					Vertex v = LerpVertex(v1, v2, t, mShadeMode == ShadeMode::Phong);
+					if (mShadeMode == ShadeMode::Phong)
+					{
+						Vector3 worldPos = LerpPosition(v1.WorldPosition, v2.WorldPosition, t);
+						v.Color *= LightManager::Get()->ComputeLightColor(v.Position, v.WorldNormal);
+					}
+					DrawPoint(v);
 				}
 			}
 		}
 	}
 }
-void Rasterizer::DrawTriangle(const Vertex& v1, const Vertex& v2, const Vertex& v3)
+void Rasterizer::DrawTriangle(Vertex v1, Vertex v2, Vertex v3)
 {
+	if (mShadeMode == ShadeMode::Flat)
+	{
+		v2.Color = v1.Color;
+		v3.Color = v1.Color;
+
+		Vector3 faceNorm = MathHelper::Normalize(MathHelper::Cross((v2.Position - v1.Position),
+			(v3.Position - v1.Position)));
+		v1.Normal = faceNorm;
+		v2.Normal = faceNorm;
+		v3.Normal = faceNorm;
+	}
+
 	switch (mFillMode)
 	{
 	case FillMode::Wireframe:

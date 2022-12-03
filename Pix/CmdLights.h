@@ -70,3 +70,21 @@ public:
 
 	bool Execute(const std::vector<std::string>& params) override;
 };
+
+
+class CmdAddPointLight : public Command
+{
+public:
+	const char* GetName() override
+	{
+		return "AddPointLight";
+	}
+
+	const char* GetDescription() override
+	{
+		return
+			"Adds a point light position(x, y, z) [optional] constant, linear, quadradic";
+	}
+
+	bool Execute(const std::vector<std::string>& params) override;
+};

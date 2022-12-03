@@ -42,7 +42,7 @@ void Camera::SetFOV(float fov)
 }
 Matrix4 Camera::GetViewMatrix() const
 {
-	const Vector3 l = mDirection;
+	const Vector3 l = MathHelper::Normalize(mDirection);
 	const Vector3 r = MathHelper::Normalize(MathHelper::Cross({ 0.0f, 1.0f, 0.0f }, l));
 	const Vector3 u = MathHelper::Normalize(MathHelper::Cross(l, r));
 	const float dx = -MathHelper::Dot(r, mPosition);

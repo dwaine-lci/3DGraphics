@@ -8,7 +8,7 @@ EnableDepth(true)
 
 float $camX = 0, 0.01
 float $camY = 2, 0.01
-float $camZ = -4, 0.01
+float $camZ = -2, 0.01
 
 float $camDirX = 0, 0.01
 float $camDirY = -2, 0.01

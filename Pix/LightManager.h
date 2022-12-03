@@ -11,7 +11,7 @@ public:
 	void OnNewFrame();
 
 	void AddDirectionalLight(const Vector3& direction);
-	//void AddPointLight()
+	void AddPointLight(const Vector3& position, float constant, float linear, float quadratic);
 
 	void SetLightingAmbient(const X::Color& ambient);
 	void SetLightingDiffuse(const X::Color& diffuse);

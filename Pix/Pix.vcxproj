@@ -160,6 +160,7 @@
     <ClCompile Include="CmdEnableDepth.cpp" />
     <ClCompile Include="CmdEndDraw.cpp" />
     <ClCompile Include="CmdLights.cpp" />
+    <ClCompile Include="CmdModel.cpp" />
     <ClCompile Include="CmdPopMatrix.cpp" />
     <ClCompile Include="CmdPushRotationX.cpp" />
     <ClCompile Include="CmdPushRotationY.cpp" />
@@ -176,6 +177,7 @@
     <ClCompile Include="CmdSetCullMode.cpp" />
     <ClCompile Include="CmdSetFillMode.cpp" />
     <ClCompile Include="CmdSetResolution.cpp" />
+    <ClCompile Include="CmdSetShadeMode.cpp" />
     <ClCompile Include="CmdSetViewport.cpp" />
     <ClCompile Include="CmdShowViewport.cpp" />
     <ClCompile Include="CmdVarBool.cpp" />
@@ -189,6 +191,8 @@
     <ClCompile Include="MaterialManager.cpp" />
     <ClCompile Include="MathHelper.cpp" />
     <ClCompile Include="MatrixStack.cpp" />
+    <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ModelCache.cpp" />
     <ClCompile Include="PixEditor.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="PrimitivesManager.cpp" />
@@ -213,6 +217,7 @@
     <ClInclude Include="CmdEnableDepth.h" />
     <ClInclude Include="CmdEndDraw.h" />
     <ClInclude Include="CmdLights.h" />
+    <ClInclude Include="CmdModel.h" />
     <ClInclude Include="CmdPopMatrix.h" />
     <ClInclude Include="CmdPushRotationX.h" />
     <ClInclude Include="CmdPushRotationY.h" />
@@ -229,6 +234,7 @@
     <ClInclude Include="CmdSetCullMode.h" />
     <ClInclude Include="CmdSetFillMode.h" />
     <ClInclude Include="CmdSetResolution.h" />
+    <ClInclude Include="CmdSetShadeMode.h" />
     <ClInclude Include="CmdSetViewport.h" />
     <ClInclude Include="CmdShowViewport.h" />
     <ClInclude Include="CmdVarBool.h" />
@@ -243,6 +249,8 @@
     <ClInclude Include="MaterialManager.h" />
     <ClInclude Include="MathHelper.h" />
     <ClInclude Include="MatrixStack.h" />
+    <ClInclude Include="Model.h" />
+    <ClInclude Include="ModelCache.h" />
     <ClInclude Include="PixEditor.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="PrimitivesManager.h" />

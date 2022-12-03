@@ -23,6 +23,16 @@ void LightManager::AddDirectionalLight(const Vector3& direction)
 	light->SetSpecular(mSpecular);
 	mLights.emplace_back(std::move(light));
 }
+void LightManager::AddPointLight(const Vector3& position, float constant, float linear, float quadratic)
+{
+	auto light = std::make_unique<PointLight>();
+	light->SetPosition(position);
+	light->SetAmbient(mAmbient);
+	light->SetDiffuse(mDiffuse);
+	light->SetSpecular(mSpecular);
+	light->SetAttenuation(constant, linear, quadratic);
+	mLights.emplace_back(std::move(light));
+}
 
 void LightManager::SetLightingAmbient(const X::Color& ambient)
 {

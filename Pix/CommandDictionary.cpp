@@ -26,6 +26,8 @@
 #include "CmdSetCullMode.h"
 #include "CmdEnableDepth.h"
 #include "CmdLights.h"
+#include "CmdModel.h"
+#include "CmdSetShadeMode.h"
 
 CommandDictionary* CommandDictionary::Get()
 {
@@ -65,6 +67,7 @@ CommandDictionary::CommandDictionary()
 	RegisterCommand<CmdSetLightDiffuse>();
 	RegisterCommand<CmdSetLightSpecular>();
 	RegisterCommand<CmdAddDirectionalLight>();
+	RegisterCommand<CmdAddPointLight>();
 
 	// Rasterization commands
 	RegisterCommand<CmdDrawPixel>();
@@ -74,7 +77,9 @@ CommandDictionary::CommandDictionary()
 	RegisterCommand<CmdEndDraw>();
 	RegisterCommand<CmdSetFillMode>();
 	RegisterCommand<CmdSetCullMode>();
+	RegisterCommand<CmdSetShadeMode>();
 	RegisterCommand<CmdEnableDepth>();
+	RegisterCommand<CmdModel>();
 }
 
 TextEditor::LanguageDefinition CommandDictionary::GenerateLanguageDefinition()

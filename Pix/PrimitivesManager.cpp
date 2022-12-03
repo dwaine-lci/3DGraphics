@@ -102,18 +102,19 @@ bool PrimitivesManager::EndDraw()
 				// move all the vertecies to the world
 				for (auto& v : triangle)
 				{
-					auto posWorld = MathHelper::TransformCoord(v.Position, matWorld);
-					v.Position = posWorld;
+					v.Position = MathHelper::TransformCoord(v.Position, matWorld);
+					v.Normal = MathHelper::TransformNormal(v.Normal, matWorld);
+					v.WorldPosition = v.Position;
+					v.WorldNormal = v.Normal;
 				}
 
-				// get face norm in the world
-				Vector3 faceNorm = MathHelper::Cross((triangle[1].Position - triangle[0].Position),
-					(triangle[2].Position - triangle[0].Position));
-
-				// apply color
-				for (auto& v : triangle)
+				if (Rasterizer::Get()->GetShadeMode() != ShadeMode::Phong)
 				{
-					v.Color *= LightManager::Get()->ComputeLightColor(v.Position, faceNorm);
+					// apply color
+					for (auto& v : triangle)
+					{
+						v.Color *= LightManager::Get()->ComputeLightColor(v.Position, v.Normal);
+					}
 				}
 
 				if (mCullMode != CullMode::None)
@@ -121,13 +122,14 @@ bool PrimitivesManager::EndDraw()
 					// move from world to NDC
 					for (auto& v : triangle)
 					{
-						auto posNdc = MathHelper::TransformCoord(v.Position, ndcSpace);
-						v.Position = posNdc;
+						v.Position = MathHelper::TransformCoord(v.Position, ndcSpace);
+						v.Normal = MathHelper::TransformNormal(v.Normal, ndcSpace);
 					}
 
 					// get facing at NDC to determin CULL
-					faceNorm = MathHelper::Cross((triangle[1].Position - triangle[0].Position), 
-														(triangle[2].Position - triangle[0].Position));
+					Vector3 faceNorm = MathHelper::Normalize(MathHelper::Cross((triangle[1].Position - triangle[0].Position),
+														(triangle[2].Position - triangle[0].Position)));
+
 					if (mCullMode == CullMode::Back && faceNorm.z > 0.0f)
 					{
 						continue;
