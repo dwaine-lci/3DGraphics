@@ -1,6 +1,7 @@
 #include "Rasterizer.h"
 #include "DepthBuffer.h"
 #include "LightManager.h"
+#include "TextureCache.h"
 
 Rasterizer* Rasterizer::Get()
 {
@@ -31,7 +32,7 @@ void Rasterizer::DrawPoint(const Vertex& v)
 {
 	if (DepthBuffer::Get()->CheckDepthBuffer(v.Position.x, v.Position.y, v.Position.z))
 	{
-		X::DrawPixel(v.Position.x, v.Position.y, v.Color);
+		X::DrawPixel(v.Position.x, v.Position.y, TextureCache::Get()->SampleColor(v.Color));
 	}
 }
 
@@ -61,6 +62,7 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 		{
 			float t = (y - startY) / (endY - startY);
 			Vertex v = LerpVertex(v1, v2, t, mShadeMode == ShadeMode::Phong);
+			v.Color = TextureCache::Get()->SampleColor(v.Color);
 			if (mShadeMode == ShadeMode::Phong)
 			{
 				Vector3 worldPos = LerpPosition(v1.WorldPosition, v2.WorldPosition, t);
@@ -94,6 +96,7 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 				if (DepthBuffer::Get()->CheckDepthBuffer(x, y, depth))
 				{
 					Vertex v = LerpVertex(startV, endV, t, mShadeMode == ShadeMode::Phong);
+					v.Color = TextureCache::Get()->SampleColor(v.Color);
 					if (mShadeMode == ShadeMode::Phong)
 					{
 						Vector3 worldPos = LerpPosition(v1.WorldPosition, v2.WorldPosition, t);
@@ -124,6 +127,7 @@ void Rasterizer::DrawLine(const Vertex& v1, const Vertex& v2)
 				if (DepthBuffer::Get()->CheckDepthBuffer(x, y, depth))
 				{
 					Vertex v = LerpVertex(v1, v2, t, mShadeMode == ShadeMode::Phong);
+					v.Color = TextureCache::Get()->SampleColor(v.Color);
 					if (mShadeMode == ShadeMode::Phong)
 					{
 						Vector3 worldPos = LerpPosition(v1.WorldPosition, v2.WorldPosition, t);

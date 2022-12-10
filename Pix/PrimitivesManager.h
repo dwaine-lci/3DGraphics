@@ -21,7 +21,10 @@ public:
 	virtual ~PrimitivesManager();
 	static PrimitivesManager* Get();
 
+	void OnNewFrame();
+
 	void SetCullMode(CullMode mode);
+	void SetCorrectUV(bool correctUV);
 
 	bool BeginDraw(Topology topology, bool applyTransform);
 	void AddVertex(Vertex vertex);
@@ -33,5 +36,6 @@ private:
 	CullMode mCullMode = CullMode::Back;
 	Topology mTopology = Topology::Triangle;
 	bool mDrawBegin = false;
+	bool mCorrectUV = true;
 	bool mApplyTransform = false;
 };

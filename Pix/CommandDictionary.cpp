@@ -28,6 +28,9 @@
 #include "CmdLights.h"
 #include "CmdModel.h"
 #include "CmdSetShadeMode.h"
+#include "CmdSetCorrectUV.h"
+#include "CmdSetAddressMode.h"
+#include "CmdSetTexture.h"
 
 CommandDictionary* CommandDictionary::Get()
 {
@@ -80,6 +83,9 @@ CommandDictionary::CommandDictionary()
 	RegisterCommand<CmdSetShadeMode>();
 	RegisterCommand<CmdEnableDepth>();
 	RegisterCommand<CmdModel>();
+	RegisterCommand<CmdSetCorrectUV>();
+	RegisterCommand<CmdSetAddressMode>();
+	RegisterCommand<CmdSetTexture>();
 }
 
 TextEditor::LanguageDefinition CommandDictionary::GenerateLanguageDefinition()

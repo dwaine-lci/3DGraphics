@@ -46,10 +46,13 @@ inline static Vertex LerpVertex(Vertex a, Vertex b, float t, bool learpNorm = fa
 	Vertex vertex;
 	vertex.Position = LerpPosition(a.Position, b.Position, t);
 	vertex.Normal = LerpPosition(a.Normal, b.Position, t);
+	vertex.WorldPosition = LerpPosition(a.WorldPosition, b.WorldPosition, t);
+	vertex.WorldNormal = LerpPosition(a.WorldNormal, b.WorldNormal, t);
 	vertex.Color = LerpColor(a.Color, b.Color, t);
 	if (learpNorm)
 	{
 		vertex.Normal = LerpNormal(a.Normal, b.Position, t);
+		vertex.WorldNormal = LerpPosition(a.WorldNormal, b.WorldNormal, t);
 	}
 	return vertex;
 }

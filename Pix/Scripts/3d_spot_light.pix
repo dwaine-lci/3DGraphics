@@ -5,7 +5,7 @@ SetClipping(true)
 SetCullMode(back)
 ShowViewport(true)
 EnableDepth(true)
-SetShadeMode(phong)
+SetShadeMode(flat)
 
 float $camX = 0, 0.01
 float $camY = 1.5, 0.01
@@ -33,10 +33,10 @@ float $rotZ = 0, 0.1
 SetCameraPosition($camX, $camY, $camZ)
 SetCameraDirection($camDirX, $camDirY, $camDirZ)
 
-SetLightAmbient(0.5, 0.5, 0.5)
+SetLightAmbient(0.2, 0.2, 0.2)
 SetLightDiffuse(0.9, 0.0, 0.9)
-SetLightSpecular(0.9, 0.9, 0.93)
-AddPointLight($lPosX, $lPosY, $lPosZ, 1, 0.5, 0.5)
+SetLightSpecular(0.3, 0.3, 0.3)
+AddPointLight($lPosX, $lPosY, $lPosZ, 1, 0, 0)
 
 BeginDraw(triangle, true)
 Model(../Models/plane_8x8.obj)
@@ -62,6 +62,8 @@ PushScaling(0.5, 0.5, 0.5)
 BeginDraw(triangle, true)
 Model(../Models/snow_man.obj)
 EndDraw()
+
+
 
 
 

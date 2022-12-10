@@ -37,9 +37,19 @@ PrimitivesManager* PrimitivesManager::Get()
 	return &sInstance;
 }
 
+void PrimitivesManager::OnNewFrame()
+{
+	mCullMode = CullMode::Back;
+	mCorrectUV = true;
+}
+
 void PrimitivesManager::SetCullMode(CullMode mode)
 {
 	mCullMode = mode;
+}
+void PrimitivesManager::SetCorrectUV(bool correctUV)
+{
+	mCorrectUV = correctUV;
 }
 
 bool PrimitivesManager::BeginDraw(Topology topology, bool applyTransform)
@@ -90,8 +100,7 @@ bool PrimitivesManager::EndDraw()
 		Matrix4 matView = Camera::Get()->GetViewMatrix();
 		Matrix4 matProj = Camera::Get()->GetProjectionMatrix();
 		Matrix4 matScreen = GetScreenTransform();
-		Matrix4 ndcSpace = matView * matProj;  // matWorld * matView * matProj
-		Matrix4 matFinal = ndcSpace * matScreen;  // matWorld * matView * matProj * matScreen
+		Matrix4 matFinal = matProj * matScreen;  // matWorld * matView * matProj * matScreen
 
 		for (size_t i = 2; i < mVertexBuffer.size(); i += 3)
 		{
@@ -99,15 +108,29 @@ bool PrimitivesManager::EndDraw()
 
 			if (mApplyTransform)
 			{
+				if (MathHelper::MagnitudeSquared(triangle[0].Normal) < 0.5f)
+				{
+					Vector3 faceNorm = MathHelper::Normalize(MathHelper::Cross((triangle[1].Position - triangle[0].Position),
+						(triangle[2].Position - triangle[0].Position)));
+
+					for (auto& v : triangle)
+					{
+						v.Normal = faceNorm;
+					}
+				}
+				// This transforms all vertecies into world position
 				// move all the vertecies to the world
 				for (auto& v : triangle)
 				{
 					v.Position = MathHelper::TransformCoord(v.Position, matWorld);
 					v.Normal = MathHelper::TransformNormal(v.Normal, matWorld);
+
+					// cache here so we dont need to do more math
 					v.WorldPosition = v.Position;
 					v.WorldNormal = v.Normal;
 				}
 
+				// color from lighting based on world position of object and light
 				if (Rasterizer::Get()->GetShadeMode() != ShadeMode::Phong)
 				{
 					// apply color
@@ -117,13 +140,29 @@ bool PrimitivesManager::EndDraw()
 					}
 				}
 
+				for (auto& v : triangle)
+				{
+					v.Position = MathHelper::TransformCoord(v.Position, matView);
+					v.Normal = MathHelper::TransformNormal(v.Normal, matView);
+				}
+
+				if (mCorrectUV && triangle[0].Color.z < 0.0f)
+				{
+					for (auto& v : triangle)
+					{
+						v.Color.x /= v.Position.z;
+						v.Color.y /= v.Position.z;
+						v.Color.w = 1.0f / v.Position.z;
+					}
+				}
+
 				if (mCullMode != CullMode::None)
 				{
 					// move from world to NDC
 					for (auto& v : triangle)
 					{
-						v.Position = MathHelper::TransformCoord(v.Position, ndcSpace);
-						v.Normal = MathHelper::TransformNormal(v.Normal, ndcSpace);
+						v.Position = MathHelper::TransformCoord(v.Position, matProj);
+						v.Normal = MathHelper::TransformNormal(v.Normal, matProj);
 					}
 
 					// get facing at NDC to determin CULL

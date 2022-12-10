@@ -6,6 +6,7 @@
 #include "Camera.h"
 #include "MatrixStack.h"
 #include "LightManager.h"
+#include "PrimitivesManager.h"
 
 void Graphics::NewFrame()
 {
@@ -15,4 +16,5 @@ void Graphics::NewFrame()
 	Camera::Get()->OnNewFrame();
 	MatrixStack::Get()->OnNewFrame();
 	LightManager::Get()->OnNewFrame();
+	PrimitivesManager::Get()->OnNewFrame();
 }
